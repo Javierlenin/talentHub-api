@@ -1,7 +1,7 @@
 import express from 'express';
 import { InMemoryVacancyRepository } from './modules/vacancies/adapter/persistence/InMemoryVacancyRepository';
 import { VacancyService } from './modules/vacancies/application/VacancyService';
-import { createVacancyRoutes } from './modules/vacancies/adapter/http/VacancyRoutes';
+import { createVacancyRouter } from './modules/vacancies/adapter/http/VacancyRoutes';
 import { notFoundHandler, errorHandler } from './shared/httpErrorHandlers';
 
 const app = express();
@@ -14,7 +14,7 @@ const vacancyRepository = new InMemoryVacancyRepository([
 // servicio casos de uso
 const vacancyService = new VacancyService(vacancyRepository);
 // rutas : se entrega el servicio y se monta bajo el prefijo  /vacancies
-app.use('/vacancies', createVacancyRoutes(vacancyService));
+app.use('/vacancies', createVacancyRouter(vacancyService));
 
 app.use(notFoundHandler);
 // manejadores de errores
