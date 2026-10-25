@@ -5,7 +5,7 @@ import HTTP_STATUS from "./httpStatus";
 
 // Ruta no coincide
 export const notFoundHandler = (req: Request, res: Response): void => {
-    res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Not found' });
+    res.status(HTTP_STATUS.NOT_FOUND).json({ error: 'Ruta no encontrada' });
 };
 
 // Manejo central de errores
@@ -22,3 +22,4 @@ export const errorHandler = (err: Error & { status?: number }, req: Request, res
         error: status < HTTP_STATUS.INTERNAL_SERVER_ERROR ? err.message : 'Internal server error',
     });
 };
+
