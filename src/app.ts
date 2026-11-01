@@ -19,6 +19,7 @@ import { notFoundHandler, errorHandler } from './shared/httpErrorHandlers';
 import { createMongoClient } from './shared/database/mongoClient';
 import { createPostgresPool } from './shared/database/postgresPool';
 import { createPrismaClient } from './shared/database/prismaClient';
+import { PrismaCandidateRepository } from './modules/candidates/adapter/persistence/PrismaCandidateRepository';
 
 const app = express();
 app.use(express.json());
@@ -44,20 +45,33 @@ const createVacancyRepository = (): VacancyRepository => {
 };
 
 const vacancyRepository = createVacancyRepository();
+const vacancyService = new VacancyService(vacancyRepository);
+app.use('/vacancies', createVacancyRouter(vacancyService));
 
-const candidateRepository: CandidateRepository = pool
-  ? new PostgresCandidateRepository(pool)
-  : new InMemoryCandidateRepository();
+const createCandidateRepository = (): CandidateRepository => {
+  if (!databaseUrl || !pool) {
+    return new InMemoryCandidateRepository([]);
+  }
+
+  if (process.env.CANDIDATES_ADAPTER === 'prisma') {
+    return new PrismaCandidateRepository(createPrismaClient(databaseUrl));
+  }
+
+  return new PostgresCandidateRepository(pool);
+};
+
+
+
+  const candidateRepository = createCandidateRepository ();
+  const candidateService = new CandidateService(candidateRepository);
+app.use('/candidates', createCandidateRouter(candidateService));
+
 
 const companyRepository: CompanyRepository = process.env.MONGODB_URI
   ? new MongoCompanyRepository(createMongoClient(process.env.MONGODB_URI))
   : new InMemoryCompanyRepository();
 
-const vacancyService = new VacancyService(vacancyRepository);
-app.use('/vacancies', createVacancyRouter(vacancyService));
 
-const candidateService = new CandidateService(candidateRepository);
-app.use('/candidates', createCandidateRouter(candidateService));
 
 const companyService = new CompanyService(companyRepository);
 app.use('/companies', createCompanyRouter(companyService));

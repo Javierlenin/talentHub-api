@@ -38,7 +38,7 @@ describe('POST /vacancies', () => {
   });
 });
 
-const candidatePayload = { name: 'Ana Ruiz', email: 'ana@example.com', city: 'Quito', experienceYears: 3 };
+const candidatePayload = { name: 'Ana Ruiz', email: 'ana@example.com', city: 'Quito', experience_years: 3 };
 
 describe('candidates', () => {
   it('lists candidates with 200', async () => {
@@ -77,10 +77,10 @@ describe('candidates', () => {
     const created = await request(app).post('/candidates').send(candidatePayload);
     const updated = await request(app)
       .put(`/candidates/${created.body.id}`)
-      .send({ ...candidatePayload, experienceYears: 5 });
+      .send({ ...candidatePayload, experience_years: 5 });
 
     expect(updated.status).toBe(200);
-    expect(updated.body.experienceYears).toBe(5);
+    expect(updated.body.experience_years).toBe(5);
 
     const deleted = await request(app).delete(`/candidates/${created.body.id}`);
     expect(deleted.status).toBe(204);

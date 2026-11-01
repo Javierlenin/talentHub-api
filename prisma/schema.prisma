@@ -18,3 +18,13 @@ model Vacancy {
 
   @@map("vacancies")
 }
+
+model Candidate {
+  id        Int     @id @default(autoincrement())
+  name     String  @db.VarChar(150)
+  email   String  @db.VarChar(150)
+  city  String  @db.VarChar(30)
+  experience_years    Int
+
+  @@map("candidates")
+}

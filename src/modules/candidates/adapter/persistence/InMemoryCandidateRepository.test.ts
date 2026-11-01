@@ -1,6 +1,6 @@
 import { InMemoryCandidateRepository } from './InMemoryCandidateRepository';
 
-const sampleCandidate = { name: 'Ana Ruiz', email: 'ana@example.com', city: 'Quito', experienceYears: 3 };
+const sampleCandidate = { name: 'Ana Ruiz', email: 'ana@example.com', city: 'Quito', experience_years: 3 };
 
 describe('InMemoryCandidateRepository', () => {
   it('starts empty when no initial candidates are given', async () => {
@@ -39,9 +39,9 @@ describe('InMemoryCandidateRepository', () => {
     const repository = new InMemoryCandidateRepository();
     const saved = await repository.save(sampleCandidate);
 
-    const updated = await repository.update(saved.id, { ...sampleCandidate, experienceYears: 5 });
+    const updated = await repository.update(saved.id, { ...sampleCandidate, experience_years: 5 });
 
-    expect(updated).toEqual({ id: saved.id, ...sampleCandidate, experienceYears: 5 });
+    expect(updated).toEqual({ id: saved.id, ...sampleCandidate, experience_years: 5 });
     expect(await repository.update(999, sampleCandidate)).toBeUndefined();
   });
 
