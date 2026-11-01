@@ -1,4 +1,3 @@
-import { MongoClient } from "mongodb";
+import { MongoClient } from 'mongodb';
 
-export const createMongoClient =  (uri: string): MongoClient => new MongoClient(uri);
-
+export const createMongoClient = (uri: string): MongoClient => new MongoClient(uri);

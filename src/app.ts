@@ -10,10 +10,15 @@ import { CandidateService } from './modules/candidates/application/CandidateServ
 import { createCandidateRouter } from './modules/candidates/adapter/http/candidateRoutes';
 import { CandidateRepository } from './modules/candidates/ports/CandidateRepository';
 import { InMemoryCompanyRepository } from './modules/companies/adapter/persistence/InMemoryCompanyRepository';
+import { MongoCompanyRepository } from './modules/companies/adapter/persistence/MongoCompanyRepository';
 import { CompanyService } from './modules/companies/application/CompanyService';
 import { createCompanyRouter } from './modules/companies/adapter/http/companyRoutes';
+import { CompanyRepository } from './modules/companies/ports/CompanyRepository';
+import { PrismaVacancyRepository } from './modules/vacancies/adapter/persistence/PrismaVacancyRepository';
 import { notFoundHandler, errorHandler } from './shared/httpErrorHandlers';
+import { createMongoClient } from './shared/database/mongoClient';
 import { createPostgresPool } from './shared/database/postgresPool';
+import { createPrismaClient } from './shared/database/prismaClient';
 
 const app = express();
 app.use(express.json());
@@ -23,17 +28,30 @@ const sampleVacancies = [
     { id: 2, title: 'Analista de Datos', company: 'Microsoft', modality: 'remote', salary: 100000 },
 ];
 
-// El dominio no elige dónde se guardan los datos. Aquí se enchufa un adaptador u otro.
-const pool = process.env.DATABASE_URL ? createPostgresPool(process.env.DATABASE_URL) : undefined;
+const databaseUrl = process.env.DATABASE_URL;
+const pool = databaseUrl ? createPostgresPool(databaseUrl) : undefined;
 
-// guardando las vacantes 
-const vacancyRepository: VacancyRepository = pool
-    ? new PostgresVacancyRepository(pool)
-    : new InMemoryVacancyRepository(sampleVacancies);
+const createVacancyRepository = (): VacancyRepository => {
+  if (!databaseUrl || !pool) {
+    return new InMemoryVacancyRepository(sampleVacancies);
+  }
+
+  if (process.env.VACANCIES_ADAPTER === 'prisma') {
+    return new PrismaVacancyRepository(createPrismaClient(databaseUrl));
+  }
+
+  return new PostgresVacancyRepository(pool);
+};
+
+const vacancyRepository = createVacancyRepository();
 
 const candidateRepository: CandidateRepository = pool
-    ? new PostgresCandidateRepository(pool)
-    : new InMemoryCandidateRepository();
+  ? new PostgresCandidateRepository(pool)
+  : new InMemoryCandidateRepository();
+
+const companyRepository: CompanyRepository = process.env.MONGODB_URI
+  ? new MongoCompanyRepository(createMongoClient(process.env.MONGODB_URI))
+  : new InMemoryCompanyRepository();
 
 const vacancyService = new VacancyService(vacancyRepository);
 app.use('/vacancies', createVacancyRouter(vacancyService));
@@ -41,7 +59,7 @@ app.use('/vacancies', createVacancyRouter(vacancyService));
 const candidateService = new CandidateService(candidateRepository);
 app.use('/candidates', createCandidateRouter(candidateService));
 
-const companyService = new CompanyService(new InMemoryCompanyRepository());
+const companyService = new CompanyService(companyRepository);
 app.use('/companies', createCompanyRouter(companyService));
 
 app.use(notFoundHandler);
