@@ -1,0 +1,20 @@
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "cjs"
+  importFileExtension = ""
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Vacancy {
+  id       Int     @id @default(autoincrement())
+  title    String  @db.VarChar(150)
+  company  String  @db.VarChar(150)
+  modality String  @db.VarChar(30)
+  salary   Decimal @db.Decimal(10, 2)
+
+  @@map("vacancies")
+}
