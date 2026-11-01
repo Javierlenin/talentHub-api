@@ -3,7 +3,7 @@ import { NotFoundError } from '../../../shared/NotFoundError';
 import { InMemoryCandidateRepository } from '../adapter/persistence/InMemoryCandidateRepository';
 import { CandidateService } from './CandidateService';
 
-const validInput = { name: 'Ana Ruiz', email: 'ana@example.com', city: 'Quito', experienceYears: 3 };
+const validInput = { name: 'Ana Ruiz', email: 'ana@example.com', city: 'Quito', experience_years: 3 };
 
 const createService = (): CandidateService => new CandidateService(new InMemoryCandidateRepository());
 
@@ -43,9 +43,9 @@ describe('CandidateService', () => {
     const service = createService();
     const created = await service.create(validInput);
 
-    const updated = await service.update(created.id, { ...validInput, experienceYears: 5 });
+    const updated = await service.update(created.id, { ...validInput, experience_years: 5 });
 
-    expect(updated).toEqual({ id: created.id, ...validInput, experienceYears: 5 });
+    expect(updated).toEqual({ id: created.id, ...validInput, experience_years: 5 });
   });
 
   it('rejects an update with invalid data and throws NotFoundError for a missing id', async () => {

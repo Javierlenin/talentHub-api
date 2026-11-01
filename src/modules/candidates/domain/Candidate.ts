@@ -5,7 +5,7 @@ export interface Candidate {
   name: string;
   email: string;
   city: string;
-  experienceYears: number;
+  experience_years: number;
 }
 
 export type NewCandidate = Omit<Candidate, 'id'>;
@@ -13,7 +13,7 @@ export type NewCandidate = Omit<Candidate, 'id'>;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const parseNewCandidate = (input: unknown): NewCandidate => {
-  const { name, email, city, experienceYears } = (input ?? {}) as Record<string, unknown>;
+  const { name, email, city, experience_years } = (input ?? {}) as Record<string, unknown>;
 
   if (typeof name !== 'string' || !name.trim() || typeof email !== 'string' || !email.trim()) {
     throw new DomainError('El nombre y el correo son obligatorios');
@@ -28,7 +28,7 @@ export const parseNewCandidate = (input: unknown): NewCandidate => {
     throw new DomainError('La ciudad es obligatoria');
   }
 
-  if (typeof experienceYears !== 'number' || experienceYears < 0) {
+  if (typeof experience_years !== 'number' || experience_years < 0) {
     throw new DomainError('Los años de experiencia deben ser un número igual o mayor que 0');
   }
 
@@ -36,6 +36,6 @@ export const parseNewCandidate = (input: unknown): NewCandidate => {
     name: name.trim(),
     email: trimmedEmail,
     city: city.trim(),
-    experienceYears,
+    experience_years,
   };
 };

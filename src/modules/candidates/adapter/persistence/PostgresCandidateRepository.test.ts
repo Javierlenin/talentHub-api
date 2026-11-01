@@ -5,7 +5,7 @@ import { Pool } from 'pg';
 import { createPostgresPool } from '../../../../shared/database/postgresPool';
 import { PostgresCandidateRepository } from './PostgresCandidateRepository';
 
-const sampleCandidate = { name: 'Ana Ruiz', email: 'ana@example.com', city: 'Quito', experienceYears: 3 };
+const sampleCandidate = { name: 'Ana Ruiz', email: 'ana@example.com', city: 'Quito', experience_years: 3 };
 const connectionString = process.env.TEST_DATABASE_URL;
 const describeWithDatabase = connectionString ? describe : describe.skip;
 
@@ -54,9 +54,9 @@ describeWithDatabase('PostgresCandidateRepository', () => {
   it('updates an existing candidate and keeps its id', async () => {
     const saved = await repository.save(sampleCandidate);
 
-    const updated = await repository.update(saved.id, { ...sampleCandidate, experienceYears: 5 });
+    const updated = await repository.update(saved.id, { ...sampleCandidate, experience_years: 5 });
 
-    expect(updated).toEqual({ id: saved.id, ...sampleCandidate, experienceYears: 5 });
+    expect(updated).toEqual({ id: saved.id, ...sampleCandidate, experience_years: 5 });
     expect(await repository.update(999, sampleCandidate)).toBeUndefined();
   });
 

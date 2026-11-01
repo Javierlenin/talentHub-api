@@ -18,7 +18,7 @@ const toCandidate = (row: CandidateRow): Candidate => ({
   name: row.name,
   email: row.email,
   city: row.city,
-  experienceYears: Number(row.experience_years),
+  experience_years: Number(row.experience_years),
 });
 
 // Adaptador de salida: cumple CandidateRepository usando PostgreSQL.
@@ -40,7 +40,7 @@ export class PostgresCandidateRepository implements CandidateRepository {
       `INSERT INTO candidates (name, email, city, experience_years)
        VALUES ($1, $2, $3, $4)
        RETURNING ${COLUMNS}`,
-      [newCandidate.name, newCandidate.email, newCandidate.city, newCandidate.experienceYears],
+      [newCandidate.name, newCandidate.email, newCandidate.city, newCandidate.experience_years],
     );
     return toCandidate(result.rows[0]);
   };
@@ -51,7 +51,7 @@ export class PostgresCandidateRepository implements CandidateRepository {
        SET name = $1, email = $2, city = $3, experience_years = $4
        WHERE id = $5
        RETURNING ${COLUMNS}`,
-      [data.name, data.email, data.city, data.experienceYears, id],
+      [data.name, data.email, data.city, data.experience_years, id],
     );
     return result.rows[0] ? toCandidate(result.rows[0]) : undefined;
   };
